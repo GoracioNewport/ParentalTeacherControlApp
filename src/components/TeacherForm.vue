@@ -383,6 +383,8 @@ function generatePDF() {
   var chat_id = import.meta.env.VITE_TELEGRAM_ID; // replace with yours
   var token = import.meta.env.VITE_TELEGRAM_TOKEN; // from botfather
 
+  console.log(chat_id, token)
+
   var formData = new FormData();
   formData.append('chat_id', chat_id);
   formData.append('document', blob, title + '.pdf');
@@ -391,7 +393,9 @@ function generatePDF() {
   request.open('POST', `https://api.telegram.org/bot${token}/sendDocument`);
   request.send(formData);
 
-  Router.go(0);
+  console.log(request)
+
+  // Router.go(0);
 }
 
 </script>
