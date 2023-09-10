@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import TeacherForm from '@/components/TeacherForm.vue';
+import DoctorForm from '@/components/DoctorForm.vue';
 </script>
 
 <template>
   <main>
-    <TeacherForm />
+    <DoctorForm />
   </main>
 </template>

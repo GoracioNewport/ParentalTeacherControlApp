@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import TeacherForm from './components/TeacherForm.vue'
+import {  RouterView } from 'vue-router'
 </script>
 
 <template>
@@ -16,10 +14,10 @@ import TeacherForm from './components/TeacherForm.vue'
         <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
-  </header>
+  </header> -->
 
-  <RouterView /> -->
-  <TeacherForm />
+  <RouterView /> 
+  <!-- <TeacherForm /> -->
 </template>
 
 <style scoped>
