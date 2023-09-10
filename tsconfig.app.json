@@ -8,5 +8,11 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "types": [
+    // ... your other types
+    "node",
+    "webpack-env"
+  ],
+  "typeRoots": [ "./node_modules/@types" ]
 }

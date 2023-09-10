@@ -7,5 +7,9 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "types": ["node", "webpack-env"],
+    "typeRoots": [ "./node_modules/@types" ]
+  }
 }

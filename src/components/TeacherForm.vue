@@ -142,7 +142,6 @@
 </template>
 
 <script setup lang="ts">
-declare var require: any // sorry
 import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
@@ -152,8 +151,10 @@ import Router from '../router'
 import 'jspdf-autotable'
 import '../assets/CustomFont.js'
 import dayjs from 'dayjs'
-const jsPDF = require('jspdf')
-const VueTailwindDatepicker = require('vue-tailwind-datepicker')
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+// @ts-ignore
+import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 
 const dateValue = ref([])
 const classesGroup = ref("0")
@@ -365,7 +366,7 @@ function generatePDF() {
     })
   }
 
-  doc.autoTable({
+  autoTable(doc, {
     columns,
     body: parsedFields,
     margin: { left: 0.5, top: 1.25 },
