@@ -100,9 +100,9 @@
           </div>
         </div>
 
-        <div v-if="classesSkipped > 0" class="block mt-4"> 
+        <div v-if="parseInt(classesSkipped) > 0" class="block mt-4"> 
           <!-- <label for="message" class="block mb-2font-bold text-gray-900">Комментарий по опозданиям</label> -->
-          <textarea  @input="skipDescription = $event.target.value" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Комментарий по опозданиям"></textarea>
+          <textarea  @input="skipDescription = ($event.target as HTMLInputElement).value" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Комментарий по опозданиям"></textarea>
         </div>
 
         <div class="block mt-6">
@@ -126,9 +126,9 @@
         </div>
 
         <!-- eslint-disable-next-line vue/require-v-for-key -->
-        <div v-for="item in botomTextInputs" :key="item.id" class="block mt-6">
-          <label :for="item" class="block mb-2 font-bold text-gray-900"> {{ item.title }}</label>
-          <textarea @input="item.value = $event.target.value" :id="item.title" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder"></textarea>
+        <div v-for="item in botomTextInputs" :key="item.title" class="block mt-6">
+          <label :for="item.title" class="block mb-2 font-bold text-gray-900"> {{ item.title }}</label>
+          <textarea @input="item.value = ($event.target as HTMLInputElement).value" :id="item.title" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder"></textarea>
         </div>
         
         <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -142,15 +142,18 @@
 </template>
 
 <script setup lang="ts">
+declare var require: any // sorry
 import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import Router from '../router'
-import VueTailwindDatepicker from 'vue-tailwind-datepicker'
-import jsPDF from 'jspdf'
+// import VueTailwindDatepicker from 'vue-tailwind-datepicker'
+// import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import '../assets/CustomFont.js'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
+const jsPDF = require('jspdf')
+const VueTailwindDatepicker = require('vue-tailwind-datepicker')
 
 const dateValue = ref([])
 const classesGroup = ref("0")
@@ -387,9 +390,7 @@ function generatePDF() {
   request.open('POST', `https://api.telegram.org/bot${token}/sendDocument`);
   request.send(formData);
 
-  console.log(request)
-
-  // Router.go();
+  Router.go(0);
 }
 
 </script>
