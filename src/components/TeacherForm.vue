@@ -388,7 +388,8 @@ function generatePDF() {
   request.open('POST', `https://api.telegram.org/bot${token}/sendDocument`);
   request.send(formData);
 
-  // console.log(request)
+  console.log(request)
+  console.log(parsedFields)
 
   alert("Спасибо, форма отправлена")
 
