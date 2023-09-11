@@ -74,8 +74,8 @@
         </div>
 
         <div class="block mt-6">          
-          <label for="steps-range" class="font-bold text-gray-900">Занятий в группе за период:</label>
-          <input id="steps-range" v-model="classesGroup" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+          <label for="steps-range1" class="font-bold text-gray-900">Занятий в группе за период:</label>
+          <input id="steps-range1" v-model="classesGroup" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
           <div style="display: flex; justify-content: space-between" class="px-1">
              <!-- eslint-disable-next-line vue/require-v-for-key -->
             <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
@@ -83,8 +83,8 @@
         </div>
 
         <div class="block mt-6">          
-          <label for="steps-range" class="font-bold text-gray-900">Занятий индивидуально за период:</label>
-          <input id="steps-range" v-model="classesIndividual" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+          <label for="steps-range2" class="font-bold text-gray-900">Занятий индивидуально за период:</label>
+          <input id="steps-range2" v-model="classesIndividual" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
           <div style="display: flex; justify-content: space-between" class="px-1">
              <!-- eslint-disable-next-line vue/require-v-for-key -->
             <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
@@ -92,8 +92,8 @@
         </div>
 
         <div class="block mt-6">          
-          <label for="steps-range" class="font-bold text-gray-900">Опозданий за период:</label>
-          <input id="steps-range" v-model="classesSkipped" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+          <label for="steps-range3" class="font-bold text-gray-900">Опозданий за период:</label>
+          <input id="steps-range3" v-model="classesSkipped" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
           <div style="display: flex; justify-content: space-between" class="px-1">
              <!-- eslint-disable-next-line vue/require-v-for-key -->
             <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import Router from '../router'
@@ -155,6 +155,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 // @ts-ignore
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
+// import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 
 const dateValue = ref([])
 const classesGroup = ref("0")
@@ -226,9 +227,9 @@ const teachers = [
   },
   {
     id: 5,
-    name: 'Алина',
+    name: 'Астровская А.А.',
     job: 'Ортопед',
-    goal: '',
+    goal: 'Формирование свода стопы, стабилизация голеностопных суставов.',
   },
   {
     id: 6,
@@ -244,9 +245,9 @@ const teachers = [
   },
   {
     id: 9,
-    name: 'Алексей',
+    name: 'Щипков А.В.',
     job: 'Плавание',
-    goal: '',
+    goal: '50 метров кролем на спине',
   },
   {
     id: 10,

@@ -12,11 +12,13 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.3.1",
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "^2.0.18",
     "@tailwindcss/forms": "^0.5.6",
     "@vue-hero-icons/solid": "^1.7.2",
     "dayjs": "^1.11.9",
+    "flowbite-datepicker": "^1.2.2",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.6.0",
     "vue": "^3.3.4",
