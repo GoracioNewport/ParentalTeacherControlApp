@@ -391,9 +391,17 @@ function generatePDF() {
   console.log(request)
   console.log(parsedFields)
 
-  alert("Спасибо, форма отправлена")
-
-  Router.go(0);
+  request.onreadystatechange = function() {
+    if (request.readyState == 4) { // `DONE`
+      if (request.status == 200) {
+        alert("Спасибо, форма отправлена")
+        Router.go(0);
+      } else {
+        alert("Произошла ошибка. Попробуйте отключить AdBlock или зайти в режиме инкогнито.")
+      }
+    }
+  }
+  
 }
 
 </script>
