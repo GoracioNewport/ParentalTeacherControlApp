@@ -4,6 +4,7 @@ import { ref } from 'vue'
 const navigation = [
   { name: 'Преподаватель', href: '/' },
   { name: 'Педиатр', href: '/doctor' },
+  { name: 'Диетолог', href: '/diet' },
   // { name: 'Админ', href: '/login' },
   // { name: 'Calendar', href: '/b' },
 ]

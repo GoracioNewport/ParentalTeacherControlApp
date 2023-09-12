@@ -73,58 +73,6 @@
           <vue-tailwind-datepicker :formatter="formatter" :shortcuts="false" v-model="dateValue" as-single use-range style="border-color: lightgrey;" class="mt-2"/>
         </div>
 
-        <div class="block mt-6">          
-          <label for="steps-range1" class="font-bold text-gray-900">Занятий в группе за период:</label>
-          <input id="steps-range1" v-model="classesGroup" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-          <div style="display: flex; justify-content: space-between" class="px-1">
-             <!-- eslint-disable-next-line vue/require-v-for-key -->
-            <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
-          </div>
-        </div>
-
-        <div class="block mt-6">          
-          <label for="steps-range2" class="font-bold text-gray-900">Занятий индивидуально за период:</label>
-          <input id="steps-range2" v-model="classesIndividual" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-          <div style="display: flex; justify-content: space-between" class="px-1">
-             <!-- eslint-disable-next-line vue/require-v-for-key -->
-            <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
-          </div>
-        </div>
-
-        <div class="block mt-6">          
-          <label for="steps-range3" class="font-bold text-gray-900">Опозданий за период:</label>
-          <input id="steps-range3" v-model="classesSkipped" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-          <div style="display: flex; justify-content: space-between" class="px-1">
-             <!-- eslint-disable-next-line vue/require-v-for-key -->
-            <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
-          </div>
-        </div>
-
-        <div v-if="parseInt(classesSkipped) > 0" class="block mt-4"> 
-          <!-- <label for="message" class="block mb-2font-bold text-gray-900">Комментарий по опозданиям</label> -->
-          <textarea  @input="skipDescription = ($event.target as HTMLInputElement).value" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Комментарий по опозданиям"></textarea>
-        </div>
-
-        <div class="block mt-6">
-          <span class="font-bold text-gray-900"> Цель: </span>
-          <br>
-          <span class="font-medium text-gray-900"> {{ selectedTeacher.goal }} </span>
-          <div class="block mt-6">
-            <span class="font-bold text-gray-900"> Движемся к цели? </span>
-            <br>
-            <label class="relative inline-flex items-center cursor-pointer mt-1">
-              <input type="checkbox" v-model="goalProgress" class="sr-only peer">
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              <span class="ml-3 text-sm font-medium text-gray-900">Да</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="block mt-6">
-            <label for="gradesinput" class="block mb-2 text-sm font-bold text-gray-900">Оценки</label>
-            <input v-model="grades" type="text" id="gradesinput" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Введите оценки через запятую">
-        </div>
-
         <!-- eslint-disable-next-line vue/require-v-for-key -->
         <div v-for="item in botomTextInputs" :key="item.title" class="block mt-6">
           <label :for="item.title" class="block mb-2 font-bold text-gray-900"> {{ item.title }}</label>
@@ -166,43 +114,49 @@ import { generatePdf } from '../utils/pdf-generator.js'
 import { sendToAdmin } from '../utils/telegram-sender.js'
 
 const dateValue = ref([])
-const classesGroup = ref("0")
-const classesIndividual = ref("0")
-const classesSkipped = ref("0")
-const skipDescription = ref("")
-const goalProgress = ref(false)
-const grades = ref("")
 const saveLocal = ref(true)
 const botomTextInputs = ref([
   {
-    title: 'Прошлое достижение',
-    value: '',
+    title: 'Обращения по заболеванию',
+    value: "",
     placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
-    title: 'Следующее достижение',
-    value: '',
+    title: 'Пропуски занятий по заболеванию',
+    value: "",
     placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
-    title: 'Замечания',
-    value: 'Нет',
+    title: 'Плановые мероприятия (в отчётном периоде)',
+    value: "",
     placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
-    title: 'Предложения',
-    value: 'Нет',
+    title: 'Дата следующих исследований',
+    value: "",
     placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
-    title: 'Странности',
-    value: 'Нет',
+    title: 'Рекомендации/замечания',
+    value: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
+  },
+  {
+    title: 'Все выявленные отклонения от нормы',
+    value: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
+  },
+  {
+    title: 'Мероприятия, направленные на устранения отклонений',
+    value: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
+  },
+  {
+    title: 'Срок устранения/ФИО ответственного',
+    value: "",
     placeholder: "Пожалуйста, дайте развернутый ответ",
   },
 ])
-
-const minRangeVal = 0
-const maxRangeVal = 5
 
 const formatter = ref({
   date: 'DD MMM YYYY',
@@ -211,52 +165,10 @@ const formatter = ref({
 
 const teachers = [
   {
-    id: 1,
-    name: 'Ахмедова Э.К.',
-    job: 'Школа 1580',
-    goal: 'Успеваемость выше среднего, а дисциплина - среднего уровня',
-  },
-  {
-    id: 2,
-    name: 'Криворак А.В.',
-    job: 'Бокс',
-    goal: 'В 10 лет на открытых рингах, не менее 4 соревнований в год, в 16-17 лет КМС',
-  },
-  {
-    id: 3,
-    name: 'Бибикова Н.В.',
-    job: 'Английский',
-    goal: 'Через 22 месяца знают английский как русский',
-  },
-  {
-    id: 5,
-    name: 'Астровская А.А.',
-    job: 'Ортопед',
-    goal: 'Формирование свода стопы, стабилизация голеностопных суставов.',
-  },
-  {
-    id: 6,
-    name: 'Григорьева М.Г.',
-    job: 'Логопед',
-    goal: 'Постановка всех звуков речи, их автоматизация, развитие словаря и грамматического строя речи.',
-  },
-  {
-    id: 8,
-    name: 'Мельянцова Ю.А.',
-    job: 'Кинолог',
-    goal: 'Животные',
-  },
-  {
-    id: 9,
-    name: 'Щипков А.В.',
-    job: 'Плавание',
-    goal: '50 метров кролем на спине',
-  },
-  {
-    id: 10,
-    name: 'Дорохина О.А.',
-    job: 'Гимнастика',
-    goal: 'Стать МС без крупных травм',
+    id: 4,
+    name: 'Артемьева Н.О.',
+    job: 'Диетолог',
+    goal: 'Соответствие с нормами роста веса',
   },
 ]
 
@@ -298,7 +210,7 @@ function processSend() {
 
   let parsedFields = [
     {
-      key: 'Преподаватель',
+      key: 'Врач',
       value: selectedTeacher.value.name,
     },
     {
@@ -306,29 +218,9 @@ function processSend() {
       value: dateInterval,
     },
     {
-      key: 'Предмет',
+      key: 'Спецификация',
       value: selectedTeacher.value.job,
     },
-    {
-      key: 'Групповых занятий',
-      value: classesGroup.value,
-    },
-    {
-      key: 'Индивидуальных занятий',
-      value: classesIndividual.value,
-    },
-    {
-      key: 'Цель',
-      value: selectedTeacher.value.goal,
-    },
-    {
-      key: 'Движемся к цели?',
-      value: (goalProgress.value ? "Да" : "Нет"),
-    },
-    {
-      key: 'Оценки за период',
-      value: grades.value,
-    }
   ]
 
   botomTextInputs.value.forEach(item => {
@@ -337,18 +229,6 @@ function processSend() {
       value: item.value
     })
   });
-
-  parsedFields.push({
-    key: 'Пропущено занятий',
-    value: classesSkipped.value,
-  })
-  
-  if (skipDescription.value != "") {
-    parsedFields.push({
-      key: 'Комментарий по пропускам',
-      value: skipDescription.value
-    })
-  }
 
   var blob = generatePdf(title, columns, parsedFields, saveLocal.value);
   sendToAdmin(blob, title);
