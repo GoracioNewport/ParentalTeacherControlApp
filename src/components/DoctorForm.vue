@@ -79,9 +79,20 @@
           <textarea @input="item.value = ($event.target as HTMLInputElement).value" :id="item.title" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder"></textarea>
         </div>
         
-        <div class="mt-6 flex items-center justify-end gap-x-6">
+        <div class="mt-6 flex items-center justify-between gap-x-6">
+
+          <div class="flex">
+            <div class="flex items-center h-5">
+              <input id="helper-checkbox" aria-describedby="helper-checkbox-text" type="checkbox" v-model="saveLocal" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            </div>
+            <div class="ml-2 text-sm">
+              <label for="helper-checkbox" class="font-medium text-gray-900 dark:text-gray-300">Сохранить отчёт</label>
+              <p id="helper-checkbox-text" class="text-xs font-normal text-gray-500 dark:text-gray-300">Скачать pdf-файл на ваше устройство</p>
+            </div>
+          </div>
+
           <!-- <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button> -->
-          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click.prevent="generatePDF">Сохранить</button>
+          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click.prevent="processSend">Отправить</button>
         </div>
 
       </form>
@@ -93,56 +104,57 @@
 import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
-import Router from '../router'
-import 'jspdf-autotable'
-import '../assets/CustomFont.js'
 import dayjs from 'dayjs'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
 // @ts-ignore
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 
+// @ts-ignore
+import { generatePdf } from '../utils/pdf-generator.js'
+// @ts-ignore
+import { sendToAdmin } from '../utils/telegram-sender.js'
+
 const dateValue = ref([])
+const saveLocal = ref(true)
 const botomTextInputs = ref([
   {
     title: 'Обращения по заболеванию',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Пропуски занятий по заболеванию',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Плановые мероприятия (в отчётном периоде)',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Дата следующих исследований',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Рекомендации/замечания',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Все выявленные отклонения от нормы',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Мероприятия, направленные на устранения отклонений',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Срок устранения/ФИО ответственного',
     value: "",
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
 ])
 
@@ -183,7 +195,7 @@ const children = [
 
 const selectedChild = ref(children[0])
 
-function generatePDF() {
+function processSend() {
 
   const columns = [
     { title: "Поле", dataKey: "key" },
@@ -194,20 +206,7 @@ function generatePDF() {
   const finishDate = dayjs(dateValue.value[1]).format('DD.MM.YYYY')
   const dateInterval = startDate + " - " + finishDate;
 
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "in",
-    format: "letter"
-  });
-
-  doc.setFont("CustomFont", "normal") 
-
-  // text is placed using x, y coordinates
   const title = selectedChild.value.name + ", " + selectedTeacher.value.job + ", " + dateInterval;
-  doc.setFontSize(16).text(title, 0.5, 1.0);
-  // create a line under heading 
-  doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1);
-  // Using autoTable plugin
 
   let parsedFields = [
     {
@@ -231,46 +230,8 @@ function generatePDF() {
     })
   });
 
-  autoTable(doc, {
-    columns,
-    body: parsedFields,
-    margin: { left: 0.5, top: 1.25 },
-    styles: {
-      font: 'CustomFont',
-    }
-  });
-
-  // console.log(parsedFields)
-
-  // Creating footer and saving file
-  var blob = doc.output("blob");
-
-  var chat_id = import.meta.env.VITE_TELEGRAM_ID; // replace with yours
-  var token = import.meta.env.VITE_TELEGRAM_TOKEN; // from botfather
-
-  // console.log(chat_id, token)
-
-  var formData = new FormData();
-  formData.append('chat_id', chat_id);
-  formData.append('document', blob, title + '.pdf');
-
-  var request = new XMLHttpRequest();
-  request.open('POST', `https://api.telegram.org/bot${token}/sendDocument`);
-  request.send(formData);
-
-  console.log(request)
-  console.log(parsedFields)
-
-  request.onreadystatechange = function() {
-    if (request.readyState == 4) { // `DONE`
-      if (request.status == 200) {
-        alert("Спасибо, форма отправлена")
-        Router.go(0);
-      } else {
-        alert("Произошла ошибка. Попробуйте отключить AdBlock или зайти в режиме инкогнито.")
-      }
-    }
-  }
+  var blob = generatePdf(title, columns, parsedFields, saveLocal.value);
+  sendToAdmin(blob, title);
 }
 
 </script>

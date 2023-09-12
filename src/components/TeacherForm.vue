@@ -121,8 +121,8 @@
         </div>
 
         <div class="block mt-6">
-            <label for="grades" class="block mb-2 text-sm font-bold text-gray-900">Оценки</label>
-            <input :v-model="grades" type="text" id="grades" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Введите оценки через запятую">
+            <label for="gradesinput" class="block mb-2 text-sm font-bold text-gray-900">Оценки</label>
+            <input v-model="grades" type="text" id="gradesinput" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Введите оценки через запятую">
         </div>
 
         <!-- eslint-disable-next-line vue/require-v-for-key -->
@@ -131,9 +131,20 @@
           <textarea @input="item.value = ($event.target as HTMLInputElement).value" :id="item.title" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder"></textarea>
         </div>
         
-        <div class="mt-6 flex items-center justify-end gap-x-6">
+        <div class="mt-6 flex items-center justify-between gap-x-6">
+
+          <div class="flex">
+            <div class="flex items-center h-5">
+              <input id="helper-checkbox" aria-describedby="helper-checkbox-text" type="checkbox" v-model="saveLocal" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            </div>
+            <div class="ml-2 text-sm">
+              <label for="helper-checkbox" class="font-medium text-gray-900 dark:text-gray-300">Сохранить отчёт</label>
+              <p id="helper-checkbox-text" class="text-xs font-normal text-gray-500 dark:text-gray-300">Скачать pdf-файл на ваше устройство</p>
+            </div>
+          </div>
+
           <!-- <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button> -->
-          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click.prevent="generatePDF">Сохранить</button>
+          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click.prevent="processSend">Отправить</button>
         </div>
 
       </form>
@@ -142,20 +153,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
-import Router from '../router'
-// import VueTailwindDatepicker from 'vue-tailwind-datepicker'
-// import jsPDF from 'jspdf'
-import 'jspdf-autotable'
-import '../assets/CustomFont.js'
 import dayjs from 'dayjs'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
 // @ts-ignore
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
-// import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
+
+// @ts-ignore
+import { generatePdf } from '../utils/pdf-generator.js'
+// @ts-ignore
+import { sendToAdmin } from '../utils/telegram-sender.js'
 
 const dateValue = ref([])
 const classesGroup = ref("0")
@@ -164,6 +172,7 @@ const classesSkipped = ref("0")
 const skipDescription = ref("")
 const goalProgress = ref(false)
 const grades = ref("")
+const saveLocal = ref(true)
 const botomTextInputs = ref([
   {
     title: 'Прошлое достижение',
@@ -178,17 +187,17 @@ const botomTextInputs = ref([
   {
     title: 'Замечания',
     value: 'Нет',
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Предложения',
     value: 'Нет',
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
   {
     title: 'Странности',
     value: 'Нет',
-    placeholder: "",
+    placeholder: "Пожалуйста, дайте развернутый ответ",
   },
 ])
 
@@ -280,7 +289,7 @@ const children = [
 
 const selectedChild = ref(children[0])
 
-function generatePDF() {
+function processSend() {
 
   const columns = [
     { title: "Поле", dataKey: "key" },
@@ -291,20 +300,7 @@ function generatePDF() {
   const finishDate = dayjs(dateValue.value[1]).format('DD.MM.YYYY')
   const dateInterval = startDate + " - " + finishDate;
 
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "in",
-    format: "letter"
-  });
-
-  doc.setFont("CustomFont", "normal") 
-
-  // text is placed using x, y coordinates
   const title = selectedChild.value.name + ", " + selectedTeacher.value.job + ", " + dateInterval;
-  doc.setFontSize(16).text(title, 0.5, 1.0);
-  // create a line under heading 
-  doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1);
-  // Using autoTable plugin
 
   let parsedFields = [
     {
@@ -352,7 +348,6 @@ function generatePDF() {
     key: 'Пропущено занятий',
     value: classesSkipped.value,
   })
-
   
   if (skipDescription.value != "") {
     parsedFields.push({
@@ -361,47 +356,8 @@ function generatePDF() {
     })
   }
 
-  autoTable(doc, {
-    columns,
-    body: parsedFields,
-    margin: { left: 0.5, top: 1.25 },
-    styles: {
-      font: 'CustomFont',
-    }
-  });
-
-  // console.log(parsedFields)
-
-  // Creating footer and saving file
-  var blob = doc.output("blob");
-
-  var chat_id = import.meta.env.VITE_TELEGRAM_ID; // replace with yours
-  var token = import.meta.env.VITE_TELEGRAM_TOKEN; // from botfather
-
-  // console.log(chat_id, token)
-
-  var formData = new FormData();
-  formData.append('chat_id', chat_id);
-  formData.append('document', blob, title + '.pdf');
-
-  var request = new XMLHttpRequest();
-  request.open('POST', `https://api.telegram.org/bot${token}/sendDocument`);
-  request.send(formData);
-
-  console.log(request)
-  console.log(parsedFields)
-
-  request.onreadystatechange = function() {
-    if (request.readyState == 4) { // `DONE`
-      if (request.status == 200) {
-        alert("Спасибо, форма отправлена")
-        Router.go(0);
-      } else {
-        alert("Произошла ошибка. Попробуйте отключить AdBlock или зайти в режиме инкогнито.")
-      }
-    }
-  }
-  
+  var blob = generatePdf(title, columns, parsedFields, saveLocal.value);
+  sendToAdmin(blob, title);
 }
 
 </script>
