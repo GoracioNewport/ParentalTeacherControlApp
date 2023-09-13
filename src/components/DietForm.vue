@@ -4,6 +4,7 @@
         <!-- Your content -->
       <form>
 
+        <!-- Ребенок -->
         <Listbox as="div" v-model="selectedChild">
           <ListboxLabel class="block font-bold leading-6 text-gray-900">Ребёнок:</ListboxLabel>
           <div class="relative mt-2">
@@ -36,6 +37,7 @@
           </div>
         </Listbox>
         
+        <!-- Специалист -->
         <Listbox as="div" v-model="selectedTeacher" class="block mt-6">
           <ListboxLabel class="block font-bold leading-6 text-gray-900">Спициалист:</ListboxLabel>
           <div class="relative mt-2">
@@ -68,17 +70,63 @@
           </div>
         </Listbox>
 
+        <!-- Период -->
         <div class="block mt-6">
           <span class="font-bold text-gray-900"> Период: </span>
           <vue-tailwind-datepicker :formatter="formatter" :shortcuts="false" v-model="dateValue" as-single use-range style="border-color: lightgrey;" class="mt-2"/>
         </div>
-
-        <!-- eslint-disable-next-line vue/require-v-for-key -->
-        <div v-for="item in botomTextInputs" :key="item.title" class="block mt-6">
+        
+        <!-- Верхние поля -->
+        <div v-for="item in topTextInputs" :key="item.title" class="block mt-6">
           <label :for="item.title" class="block mb-2 font-bold text-gray-900"> {{ item.title }}</label>
-          <textarea @input="item.value = ($event.target as HTMLInputElement).value" :id="item.title" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder"></textarea>
+          <input v-model="item.value" :id="item.title" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder">
+        </div>
+
+        <!-- Комментарий -->
+        <div class="block mt-6"> 
+          <label for="topTextCommentsId" class="block mb-2 font-bold text-gray-900"> Комментарий </label>
+          <textarea @input="topTextComments = ($event.target as HTMLInputElement).value" id="topTextCommentsId" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"> </textarea>
+        </div>
+
+        <!-- Питание -->
+        <div class="block, mt-6">
+          <!-- eslint-disable-next-line vue/require-v-for-key -->
+          <div v-for="(item, dayIndex) in dietDays">
+             <!-- eslint-disable-next-line vue/require-v-for-key -->
+            <div v-for="part in item"> 
+              <label :for="dayIndex + part.title" class="block mb-2 font-bold text-gray-900"> День №{{ dayIndex + 1 }}, {{ part.title }}</label>
+              <input :id="dayIndex + part.title" v-model="part.percentage" type="range" :min="0" :max="100" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+              <div style="display: flex; justify-content: space-between" class="px-1">
+                <!-- eslint-disable-next-line vue/require-v-for-key -->
+                <span> 0% </span>
+                <span> 100% </span>
+              </div>
+
+              <div v-if="part.percentage !== '100'">
+                <label :for="dayIndex + part.title + 'comment'" class="block mb-2 font-bold text-gray-900"> День №{{ dayIndex + 1 }}, {{ part.title }}, комментарий </label>
+                <textarea @input="part.comment = ($event.target as HTMLInputElement).value" :id="dayIndex + part.title + 'comment'" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Что не съел?"> </textarea>
+              </div>
+            </div>    
+          </div>
+        </div>
+
+        <!-- Цель -->
+        <div class="block mt-6">
+          <span class="font-bold text-gray-900"> Цель: </span>
+          <br>
+          <span class="font-medium text-gray-900"> {{ selectedTeacher.goal }} </span>
+          <div class="block mt-6">
+            <span class="font-bold text-gray-900"> Движемся к цели? </span>
+            <br>
+            <label class="relative inline-flex items-center cursor-pointer mt-1">
+              <input type="checkbox" v-model="goalProgress" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <span class="ml-3 text-sm font-medium text-gray-900">Да</span>
+            </label>
+          </div>
         </div>
         
+        <!-- Отправить -->
         <div class="mt-6 flex items-center justify-between gap-x-6">
 
           <div class="flex">
@@ -115,48 +163,45 @@ import { sendToAdmin } from '../utils/telegram-sender.js'
 
 const dateValue = ref([])
 const saveLocal = ref(true)
-const botomTextInputs = ref([
+const goalProgress = ref(false)
+const topTextInputs = ref([
   {
-    title: 'Обращения по заболеванию',
+    title: 'Дата рождения',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "ДД.ММ.ГГГГ",
   },
   {
-    title: 'Пропуски занятий по заболеванию',
+    title: 'Возраст (лет, мес)',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "Пример: 10 лет, 8 мес",
   },
   {
-    title: 'Плановые мероприятия (в отчётном периоде)',
+    title: 'Рост (норма) в см',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "Пример: 160 (165)",
   },
   {
-    title: 'Дата следующих исследований',
+    title: 'Вес (норма) в кг',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "Пример: 54 (55)",
   },
   {
-    title: 'Рекомендации/замечания',
+    title: 'ИМТ',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "",
   },
   {
-    title: 'Все выявленные отклонения от нормы',
+    title: 'Ккал/день (в среднем)',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "",
   },
   {
-    title: 'Мероприятия, направленные на устранения отклонений',
+    title: 'Предположительный вес с учётом возраста и роста',
     value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
-  },
-  {
-    title: 'Срок устранения/ФИО ответственного',
-    value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
+    placeholder: "",
   },
 ])
+const topTextComments = ref("")
 
 const formatter = ref({
   date: 'DD MMM YYYY',
@@ -171,6 +216,41 @@ const teachers = [
     goal: 'Соответствие с нормами роста веса',
   },
 ]
+
+const dietLength = ref(7)
+interface DayDietPart {
+      title: string,
+      percentage: string,
+      comment: string,
+}
+
+// @ts-ignore
+const dietDays: DayDietPart[][] = ref([])
+
+for (let i = 0; i < dietLength.value; i++) {
+  // @ts-ignore
+  dietDays.value.push([{
+      title: 'Завтрак',
+      percentage: '100',
+      comment: ""
+    },
+    {
+      title: 'Обед',
+      percentage: '100',
+      comment: ""
+    },
+    {
+      title: 'Ужин',
+      percentage: '100',
+      comment: ""
+    },
+    {
+      title: 'Десерт',
+      percentage: '100',
+      comment: ""
+    },
+  ])
+}
 
 const selectedTeacher = ref(teachers[0])
 
@@ -195,6 +275,14 @@ const children = [
 
 const selectedChild = ref(children[0])
 
+function getDateDiffsInDays(date1 : dayjs.Dayjs, date2 : dayjs.Dayjs) {
+  if (date1 == null || date2 == null) {
+    return 0;
+  }
+
+  return date1.diff(date2, 'day')
+}
+
 function processSend() {
 
   const columns = [
@@ -210,7 +298,7 @@ function processSend() {
 
   let parsedFields = [
     {
-      key: 'Врач',
+      key: 'Специалист',
       value: selectedTeacher.value.name,
     },
     {
@@ -221,14 +309,49 @@ function processSend() {
       key: 'Спецификация',
       value: selectedTeacher.value.job,
     },
+    {
+      key: 'Цель',
+      value: selectedTeacher.value.goal,
+    },
+    {
+      key: 'Движемся к цели?',
+      value: (goalProgress.value ? "Да" : "Нет"),
+    },
   ]
 
-  botomTextInputs.value.forEach(item => {
+  topTextInputs.value.forEach(item => {
     parsedFields.push({
       key: item.title,
       value: item.value
     })
   });
+
+  parsedFields.push({
+    key: 'Комментарий',
+    value: topTextComments.value
+  })
+
+
+  for (let i = 0; i < dietLength.value; i++) {
+    // @ts-ignore
+    for (let j = 0; j < dietDays.value[i].length; j++) {
+      parsedFields.push({
+        // @ts-ignore
+        key: 'День №' + (i + 1) + ', ' + dietDays.value[i][j].title,
+        // @ts-ignore
+        value: dietDays.value[i][j].percentage + '%'
+      })
+
+      // @ts-ignore
+      if (dietDays.value[i][j].percentage != '100') {
+        parsedFields.push({
+        key: 'Комментарий',
+        // @ts-ignore
+        value: dietDays.value[i][j].comment
+      })
+      }
+    }
+  }
 
   var blob = generatePdf(title, columns, parsedFields, saveLocal.value);
   sendToAdmin(blob, title);

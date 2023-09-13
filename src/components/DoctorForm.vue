@@ -210,7 +210,7 @@ function processSend() {
 
   let parsedFields = [
     {
-      key: 'Врач',
+      key: 'Специалист',
       value: selectedTeacher.value.name,
     },
     {
