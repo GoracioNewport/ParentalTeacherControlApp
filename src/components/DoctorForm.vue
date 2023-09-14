@@ -78,6 +78,35 @@
           <label :for="item.title" class="block mb-2 font-bold text-gray-900"> {{ item.title }}</label>
           <textarea @input="item.value = ($event.target as HTMLInputElement).value" :id="item.title" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" :placeholder="item.placeholder"></textarea>
         </div>
+
+        <div v-for="(item, index) in deviations" :key="index" class="block mt-6">
+
+
+          <div>
+            <label :for="'deviationa' + index" class="block mb-2 font-bold text-gray-900 flex items-center justify-between"> 
+              Отклонение №{{ index + 1 }}, описание
+              <TrashIcon v-if="index == (deviations.length - 1)" class="h-5 w-5" @click="removeDeviation"/>
+            </label>
+            <textarea @input="item.description = ($event.target as HTMLInputElement).value" :id="'deviationa' + index" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Пожалуйста, дайте развернутый ответ"></textarea>
+          </div>
+
+          <div class="block mt-6">
+            <label :for="'deviationa' + index" class="block mb-2 font-bold text-gray-900"> Отклонение №{{ index + 1 }}, мероприятия по устранению</label>
+            <textarea @input="item.due = ($event.target as HTMLInputElement).value" :id="'deviationa' + index" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Пожалуйста, дайте развернутый ответ"></textarea>
+          </div>
+        </div>
+
+        <div class="block mt-6 flex items-center justify-end">
+          <button class="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click.prevent="addDeviation">
+            <PlusIcon class="h-5 w-5 pt-1"/>
+            &nbsp;Добавить отклонение
+          </button>
+        </div>
+
+        <div class="block mt-6">
+          <label for="resp" class="block mb-2 font-bold text-gray-900"> Срок устранения/ФИО ответственного </label>
+          <textarea @input="responsibeField = ($event.target as HTMLInputElement).value" id="resp" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Дата/ФИО"></textarea>
+        </div>
         
         <div class="mt-6 flex items-center justify-between gap-x-6">
 
@@ -103,7 +132,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
+import { CheckIcon, ChevronUpDownIcon, PlusIcon, TrashIcon } from '@heroicons/vue/20/solid'
 import dayjs from 'dayjs'
 // @ts-ignore
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
@@ -151,12 +180,9 @@ const botomTextInputs = ref([
     value: "",
     placeholder: "Пожалуйста, дайте развернутый ответ",
   },
-  {
-    title: 'Срок устранения/ФИО ответственного',
-    value: "",
-    placeholder: "Пожалуйста, дайте развернутый ответ",
-  },
 ])
+
+const responsibeField = ref("")
 
 const formatter = ref({
   date: 'DD MMM YYYY',
@@ -195,6 +221,29 @@ const children = [
 
 const selectedChild = ref(children[0])
 
+interface Deviation {
+  description: string,
+  due: string
+}
+
+// @ts-ignore
+const deviations: Deviation[] = ref([])
+
+function addDeviation() {
+  // @ts-ignore
+  deviations.value.push({
+    description: "",
+    due: ""
+  })
+}
+
+
+// @ts-ignore
+function removeDeviation() {
+  // @ts-ignore
+  deviations.value.pop();
+}
+
 function processSend() {
 
   const columns = [
@@ -229,6 +278,27 @@ function processSend() {
       value: item.value
     })
   });
+
+  let index = 1;
+  // @ts-ignore
+  deviations.value.forEach(item => {
+    parsedFields.push({
+      key: "Отклонение №" + index + ", описание",
+      value: item.description
+    })
+
+    parsedFields.push({
+      key: "Отклонение №" + index + ", мероприятия по устранению",
+      value: item.due
+    })
+
+    index++;
+  })
+
+  parsedFields.push({
+    key: "Срок устранения/ФИО ответственного",
+    value: responsibeField.value
+  })
 
   var blob = generatePdf(title, columns, parsedFields, saveLocal.value);
   sendToAdmin(blob, title);
