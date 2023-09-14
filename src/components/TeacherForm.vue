@@ -93,16 +93,30 @@
 
         <div class="block mt-6">          
           <label for="steps-range3" class="font-bold text-gray-900">Опозданий за период:</label>
-          <input id="steps-range3" v-model="classesSkipped" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+          <input id="steps-range3" v-model="classesLate" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
           <div style="display: flex; justify-content: space-between" class="px-1">
              <!-- eslint-disable-next-line vue/require-v-for-key -->
             <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
           </div>
         </div>
 
-        <div v-if="parseInt(classesSkipped) > 0" class="block mt-4"> 
+        <div v-if="parseInt(classesLate) > 0" class="block mt-6"> 
           <!-- <label for="message" class="block mb-2font-bold text-gray-900">Комментарий по опозданиям</label> -->
-          <textarea  @input="skipDescription = ($event.target as HTMLInputElement).value" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Комментарий по опозданиям"></textarea>
+          <textarea  @input="lateDescription = ($event.target as HTMLInputElement).value" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Комментарий по опозданиям"></textarea>
+        </div>
+
+        <div class="block mt-6">          
+          <label for="steps-range4" class="font-bold text-gray-900">Пропусков за период:</label>
+          <input id="steps-range4" v-model="classesSkipped" type="range" :min="minRangeVal" :max="maxRangeVal" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+          <div style="display: flex; justify-content: space-between" class="px-1">
+             <!-- eslint-disable-next-line vue/require-v-for-key -->
+            <span v-for="i in maxRangeVal + 1"> {{ i - 1}} </span>
+          </div>
+        </div>
+
+        <div v-if="parseInt(classesSkipped) > 0" class="block mt-6"> 
+          <!-- <label for="message" class="block mb-2font-bold text-gray-900">Комментарий по опозданиям</label> -->
+          <textarea  @input="skipDescription = ($event.target as HTMLInputElement).value" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Комментарий по пропускам"></textarea>
         </div>
 
         <div class="block mt-6">
@@ -170,6 +184,8 @@ const classesGroup = ref("0")
 const classesIndividual = ref("0")
 const classesSkipped = ref("0")
 const skipDescription = ref("")
+const classesLate = ref("0")
+const lateDescription = ref("")
 const goalProgress = ref(false)
 const grades = ref("")
 const saveLocal = ref(true)
@@ -339,7 +355,19 @@ function processSend() {
   });
 
   parsedFields.push({
-    key: 'Пропущено занятий',
+    key: 'Опозданий за период',
+    value: classesLate.value,
+  })
+  
+  if (lateDescription.value != "") {
+    parsedFields.push({
+      key: 'Комментарий по опозданиям',
+      value: lateDescription.value
+    })
+  }
+
+  parsedFields.push({
+    key: 'Пропусков за период',
     value: classesSkipped.value,
   })
   
