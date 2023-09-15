@@ -94,12 +94,13 @@
           <div v-for="(item, dayIndex) in dietDays">
              <!-- eslint-disable-next-line vue/require-v-for-key -->
             <div v-for="part in item"> 
-              <label :for="dayIndex + part.title" class="block mb-2 font-bold text-gray-900"> День №{{ dayIndex + 1 }}, {{ part.title }}</label>
-              <input :id="dayIndex + part.title" v-model="part.percentage" type="range" :min="0" :max="100" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-              <div style="display: flex; justify-content: space-between" class="px-1">
-                <!-- eslint-disable-next-line vue/require-v-for-key -->
-                <span> 0% </span>
-                <span> 100% </span>
+              <div style="touch-action: none;">
+                <label :for="dayIndex + part.title" class="block mb-2 font-bold text-gray-900"> День №{{ dayIndex + 1 }}, {{ part.title }}</label>
+                <input :id="dayIndex + part.title" v-model="part.percentage" type="range" :min="0" :max="100" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                <div class="flex justify-center px-1">
+                  <!-- eslint-disable-next-line vue/require-v-for-key -->
+                  <span> {{ part.percentage }}% </span>
+                </div>
               </div>
 
               <div v-if="part.percentage !== '100'">
