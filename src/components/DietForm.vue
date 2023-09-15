@@ -103,8 +103,8 @@
                 </div>
               </div>
 
-              <div v-if="part.percentage !== '100'">
-                <label :for="dayIndex + part.title + 'comment'" class="block mb-2 font-bold text-gray-900"> День №{{ dayIndex + 1 }}, {{ part.title }}, комментарий </label>
+              <div v-if="part.percentage !== '0'">
+                <label :for="dayIndex + part.title + 'comment'" class="block mb-2 font-bold text-gray-900"> День №{{ dayIndex + 1 }}, комментарий </label>
                 <textarea @input="part.comment = ($event.target as HTMLInputElement).value" :id="dayIndex + part.title + 'comment'" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Что не съел?"> </textarea>
               </div>
             </div>    
@@ -231,23 +231,23 @@ const dietDays: DayDietPart[][] = ref([])
 for (let i = 0; i < dietLength.value; i++) {
   // @ts-ignore
   dietDays.value.push([{
-      title: 'Завтрак',
-      percentage: '100',
+      title: 'Завтрак пропущено',
+      percentage: '0',
       comment: ""
     },
     {
-      title: 'Обед',
-      percentage: '100',
+      title: 'Обед пропущено',
+      percentage: '0',
       comment: ""
     },
     {
-      title: 'Ужин',
-      percentage: '100',
+      title: 'Ужин пропущено',
+      percentage: '0',
       comment: ""
     },
     {
-      title: 'Десерт',
-      percentage: '100',
+      title: 'Десерт пропущено',
+      percentage: '0',
       comment: ""
     },
   ])
