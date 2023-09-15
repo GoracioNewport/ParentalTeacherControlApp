@@ -27,7 +27,7 @@
                     </div>
 
                     <span v-if="selected" :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
-                      <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      <CheckIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                   </li>
                 </ListboxOption>
@@ -59,7 +59,7 @@
                     </div>
 
                     <span v-if="selected" :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
-                      <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      <CheckIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                   </li>
                 </ListboxOption>
@@ -85,7 +85,7 @@
           <div>
             <label :for="'deviationa' + index" class="block mb-2 font-bold text-gray-900 flex items-center justify-between"> 
               Отклонение №{{ index + 1 }}, описание
-              <TrashIcon v-if="index == (deviations.length - 1)" class="h-5 w-5" @click="removeDeviation"/>
+              <TrashIcon v-if="index == (deviations.length - 1)" class="h-5 w-5 text-gray-400" @click="removeDeviation"/>
             </label>
             <textarea @input="item.description = ($event.target as HTMLInputElement).value" :id="'deviationa' + index" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Пожалуйста, дайте развернутый ответ"></textarea>
           </div>
