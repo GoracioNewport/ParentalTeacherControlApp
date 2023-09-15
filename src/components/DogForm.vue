@@ -5,7 +5,7 @@
       <form>
 
         <Listbox as="div" v-model="selectedChild">
-          <ListboxLabel class="block font-bold leading-6 text-gray-900">Ребёнок:</ListboxLabel>
+          <ListboxLabel class="block font-bold leading-6 text-gray-900">Животное:</ListboxLabel>
           <div class="relative mt-2">
             <ListboxButton class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
               <span class="flex items-center">
@@ -227,46 +227,10 @@ const formatter = ref({
 
 const teachers = [
   {
-    id: 1,
-    name: 'Ахмедова Э.К.',
-    job: 'Школа 1580',
-    goal: 'Успеваемость выше среднего, а дисциплина - среднего уровня',
-  },
-  {
-    id: 2,
-    name: 'Криворак А.В.',
-    job: 'Бокс',
-    goal: 'В 10 лет на открытых рингах, не менее 4 соревнований в год, в 16-17 лет КМС',
-  },
-  {
-    id: 3,
-    name: 'Бибикова Н.В.',
-    job: 'Английский',
-    goal: 'Через 22 месяца знают английский как русский',
-  },
-  {
-    id: 5,
-    name: 'Астровская А.А.',
-    job: 'Ортопед',
-    goal: 'Формирование свода стопы, стабилизация голеностопных суставов.',
-  },
-  {
-    id: 6,
-    name: 'Григорьева М.Г.',
-    job: 'Логопед',
-    goal: 'Постановка всех звуков речи, их автоматизация, развитие словаря и грамматического строя речи.',
-  },
-  {
-    id: 9,
-    name: 'Щипков А.В.',
-    job: 'Плавание',
-    goal: '50 метров кролем на спине',
-  },
-  {
-    id: 10,
-    name: 'Дорохина О.А.',
-    job: 'Гимнастика',
-    goal: 'Стать МС без крупных травм',
+    id: 0,
+    name: 'Мельянцова Ю.А.',
+    job: 'Кинолог',
+    goal: 'Животные',
   },
 ]
 
@@ -275,19 +239,7 @@ const selectedTeacher = ref(teachers[0])
 const children = [
   {
     id: 0,
-    name: 'Максим',
-  },
-  {
-    id: 1,
-    name: 'Дима',
-  },
-  {
-    id: 2,
-    name: 'Вадим',
-  },
-  {
-    id: 3,
-    name: 'Вероника',
+    name: 'Эрик',
   }
 ]
 
