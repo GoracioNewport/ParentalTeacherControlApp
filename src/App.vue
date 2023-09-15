@@ -38,7 +38,8 @@ const unactiveClasses = ref('hover:text-gray-600 hover:bg-gray-50')
             Вы&nbsp;
           </span>
           <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="flex items-center text-gray-900 bg-white focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-2 py-2 mr-2 mb-2" type="button">
-            {{ routeToName[$route.name] }} &nbsp;
+            {{ // @ts-ignore
+            routeToName[$route.name] }} &nbsp;
             <ChevronUpDownIcon class="h-5 w-5 text-gray-400 mt-1"/>
           </button>
           <span class="font-bold leading-6 text-gray-900 pb-2">
