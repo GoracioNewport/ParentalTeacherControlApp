@@ -91,8 +91,13 @@
           </div>
 
           <div class="block mt-6">
-            <label :for="'deviationa' + index" class="block mb-2 font-bold text-gray-900"> Отклонение №{{ index + 1 }}, мероприятия по устранению</label>
-            <textarea @input="item.due = ($event.target as HTMLInputElement).value" :id="'deviationa' + index" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Пожалуйста, дайте развернутый ответ"></textarea>
+            <label :for="'deviationb' + index" class="block mb-2 font-bold text-gray-900"> Отклонение №{{ index + 1 }}, мероприятия по устранению</label>
+            <textarea @input="item.due = ($event.target as HTMLInputElement).value" :id="'deviationb' + index" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Пожалуйста, дайте развернутый ответ"></textarea>
+          </div>
+
+          <div class="block mt-6">
+            <label :for="'deviationc' + index" class="block mb-2 font-bold text-gray-900"> Отклонение №{{ index + 1 }}, срок устранения/ФИО ответственного </label>
+            <textarea @input="item.manager = ($event.target as HTMLInputElement).value" :id="'deviationc' + index" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Дата/ФИО"></textarea>
           </div>
         </div>
 
@@ -101,11 +106,6 @@
             <PlusIcon class="h-5 w-5 pt-1"/>
             &nbsp;Добавить отклонение
           </button>
-        </div>
-
-        <div class="block mt-6">
-          <label for="resp" class="block mb-2 font-bold text-gray-900"> Срок устранения/ФИО ответственного </label>
-          <textarea @input="responsibeField = ($event.target as HTMLInputElement).value" id="resp" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Дата/ФИО"></textarea>
         </div>
         
         <div class="mt-6 flex items-center justify-between gap-x-6">
@@ -182,8 +182,6 @@ const botomTextInputs = ref([
   },
 ])
 
-const responsibeField = ref("")
-
 const formatter = ref({
   date: 'DD MMM YYYY',
   month: 'MMM'
@@ -223,7 +221,8 @@ const selectedChild = ref(children[0])
 
 interface Deviation {
   description: string,
-  due: string
+  due: string,
+  manager: string,
 }
 
 // @ts-ignore
@@ -233,7 +232,8 @@ function addDeviation() {
   // @ts-ignore
   deviations.value.push({
     description: "",
-    due: ""
+    due: "",
+    manager: "",
   })
 }
 
@@ -292,12 +292,12 @@ function processSend() {
       value: item.due
     })
 
-    index++;
-  })
+    parsedFields.push({
+      key: "Отклонение №" + index + ", срок устранения/ФИО ответственного",
+      value: item.manager
+    })
 
-  parsedFields.push({
-    key: "Срок устранения/ФИО ответственного",
-    value: responsibeField.value
+    index++;
   })
 
   var blob = generatePdf(title, columns, parsedFields, saveLocal.value);
